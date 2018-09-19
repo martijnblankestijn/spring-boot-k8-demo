@@ -19,7 +19,10 @@ apply plugin: 'kotlin-spring'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+// 'docker-spring-boot-application' automatically applies plugin 'com.bmuschko.docker-remote-api' for interacting with Docker via its remote API
 apply plugin: 'com.bmuschko.docker-spring-boot-application'
+
+group = "nl.mblankestijn.k8.demo"
 
 bootJar {
     baseName = 'demo-k8'
@@ -52,5 +55,27 @@ compileTestKotlin {
     kotlinOptions {
         freeCompilerArgs = ["-Xjsr305=strict"]
         jvmTarget = "1.8"
+    }
+}
+
+// See http://bmuschko.github.io/gradle-docker-plugin/#spring_boot_application_plugin
+docker {
+    springBootApplication {
+//        baseImage = 'openjdk:8-alpine'
+        baseImage = 'ibmjava:8-jre-alpine'
+        ports = [8080] // is the 'opinionated' default
+        tag = "$dockerHubUsername/demo-k8-boot:1.115"
+    }
+    dockerPushImage {
+        imageName = "$dockerHubUsername/demo-k8-boot"
+        tag = '1.115'
+        registryCredentials {
+            url = "https://hub.docker.com/r/$dockerHubUsername"
+            // properties below could be defined in ~/.gradle/gradle.properties
+            // or commandline, like:
+            //  gradle dockerPushImage -PdockerHubUsername=[username] -PdockerHubPassword=[password]
+            username = dockerHubUsername
+            password = dockerHubPassword 
+        }
     }
 }
