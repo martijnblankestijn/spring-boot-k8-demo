@@ -38,5 +38,8 @@ jobs:
         key: v1-dependencies-{{ checksum "build.gradle" }}
 
     # run tests!
-    - run: gradle build -PdockerHubUsername=$DOCKER_HUB_USERNAME -PdockerHubPassword=$DOCKER_HUB_PASSWORD
+    - run: gradle test -PdockerHubUsername=$DOCKER_HUB_USERNAME -PdockerHubPassword=$DOCKER_HUB_PASSWORD
+    
+    # pushImage
+    - run: gradle pushImage -PdockerHubUsername=$DOCKER_HUB_USERNAME -PdockerHubPassword=$DOCKER_HUB_PASSWORD
 
